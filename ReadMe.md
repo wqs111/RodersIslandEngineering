@@ -1,7 +1,7 @@
 仿制设计师网站 ignordone.space
 
 主要元素描述
-图片背景url:https://www.ignoredone.space/wp-content/uploads/2025/02/网页首页使用-scaled-e1756810226577.webp
+图片背景来自 [文件:Avg 60 i24 5.png - PRTS - 玩家共同构筑的明日方舟中文Wiki](https://prts.wiki/w/文件:Avg_60_i24_5.png)
 中间大号文字,小字副标题
 右上角搜索框及搜索按钮
 左侧中部由组件栏（内有4个按钮）
