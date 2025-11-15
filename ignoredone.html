@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quits Wang</title>
+    <style>
+        /* 页面重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 全局样式 */
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            cursor: none;
+            /* 隐藏默认鼠标 */
+        }
+
+        /* 自定义鼠标样式 - 创建一个单独的元素而不是使用伪元素 */
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, border-color 0.3s, background-color 0.3s;
+        }
+
+        /* 为所有可交互元素设置cursor: none，完全屏蔽默认鼠标样式 */
+        button,
+        .icon,
+        input,
+        a,
+        select,
+        textarea {
+            cursor: none !important;
+        }
+
+        /* 确保在任何状态下都不会显示默认鼠标 */
+        * {
+            cursor: none !important;
+        }
+
+        /* 悬停状态的鼠标样式 - 将通过JavaScript实现 */
+        .custom-cursor.hover {
+            width: 40px;
+            height: 40px;
+            border-color: rgba(200, 200, 200, 1);
+            background-color: rgba(200, 200, 200, 0.8);
+        }
+
+        /* main容器样式 */
+        main {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 背景图片样式 */
+        .bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            filter: brightness(0.7);
+            /* 调暗背景图片 */
+        }
+
+        .bg-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 树状栅格效果 - 使用伪元素实现 */
+        .bg-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+            background-size: 25px 25px;
+            z-index: 1;
+            animation: gridWave 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* 增强的波动变幻动画 */
+        @keyframes gridWave {
+            0% {
+                opacity: 0.4;
+                transform: scale(1) translate(0, 0);
+            }
+
+            25% {
+                opacity: 0.6;
+                transform: scale(1.02) translate(-5px, 5px);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.05) translate(0, 0);
+            }
+
+            75% {
+                opacity: 0.6;
+                transform: scale(1.02) translate(5px, -5px);
+            }
+
+            100% {
+                opacity: 0.4;
+                transform: scale(1) translate(0, 0);
+            }
+        }
+
+        /* 添加第二层栅格效果增强视觉深度 */
+        .bg-img::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            animation: gridWave 15s ease-in-out infinite reverse;
+            pointer-events: none;
+        }
+
+        /* 覆盖层 - 添加整体氛围 */
+        main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+
+        /* 中间标题文字样式 */
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+            animation-delay: 0.5s;
+        }
+
+        .hero-text h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) translateY(0);
+            }
+        }
+
+        /* 响应式标题大小 */
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+        }
+
+        /* 右上角搜索框样式 */
+        .search-bar {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 20;
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards;
+            animation-delay: 1s;
+        }
+
+        .search-bar input {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-bar input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            width: 300px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-bar button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-bar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 响应式搜索框 */
+        @media (max-width: 768px) {
+            .search-bar {
+                top: 20px;
+                right: 20px;
+                left: 20px;
+                justify-content: center;
+            }
+
+            .search-bar input {
+                width: 180px;
+            }
+
+            .search-bar input:focus {
+                width: 200px;
+            }
+        }
+
+        /* 左侧工具栏样式 */
+        .left-tool-bar {
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 20;
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards;
+            animation-delay: 1.2s;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 图标按钮的悬停效果 */
+        .icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.15);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
+        }
+
+        /* 图标按钮的点击效果 */
+        .icon:active {
+            transform: scale(0.95);
+        }
+
+        /* 为每个图标添加不同的延迟动画 */
+        .icon:nth-child(1) {
+            animation-delay: 1.2s;
+        }
+
+        .icon:nth-child(2) {
+            animation-delay: 1.3s;
+        }
+
+        .icon:nth-child(3) {
+            animation-delay: 1.4s;
+        }
+
+        .icon:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+
+        /* 响应式左侧工具栏 */
+        @media (max-width: 768px) {
+            .left-tool-bar {
+                left: 20px;
+                gap: 15px;
+            }
+
+            .icon {
+                width: 50px;
+                height: 50px;
+                font-size: 16px;
+            }
+        }
+
+        /* 右下角了解更多按钮样式 */
+        .learnmore {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            z-index: 20;
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards;
+            animation-delay: 1.7s;
+        }
+
+        .learnmore button {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 了解更多按钮的悬停效果 */
+        .learnmore button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 了解更多按钮的点击效果 */
+        .learnmore button:active {
+            transform: scale(0.95);
+        }
+
+        /* 添加脉冲动画 */
+        .learnmore button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式了解更多按钮 */
+        @media (max-width: 768px) {
+            .learnmore {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .learnmore button {
+                width: 60px;
+                height: 60px;
+                font-size: 18px;
+            }
+        }
+
+        /* 个人介绍表格样式 */
+        .profile-table {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            z-index: 15;
+            opacity: 1;
+            /* 默认显示 */
+        }
+
+        .profile-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .profile-table th,
+        .profile-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .profile-table td {
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .profile-table tr:last-child th,
+        .profile-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 表格悬停效果 */
+        .profile-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 表格标题 */
+        .profile-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 响应式表格 */
+        @media (max-width: 768px) {
+            .profile-table {
+                width: 90%;
+                padding: 20px;
+                top: 100px;
+            }
+
+            .profile-table th,
+            .profile-table td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .profile-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        .partical-container {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            /* 最大宽度限制 */
+            height: 300px;
+            /* 固定高度或使用下面的vh单位 */
+            /* height: 50vh; 相对于视口高度 */
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .partical-container {
+                height: 250px;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .partical-container {
+                height: 200px;
+                max-width: 95%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 个人介绍表格 - 位于body标签顶部 -->
+    <div class="profile-table">
+        <h2 class="profile-title">个人介绍</h2>
+        <table>
+            <tr>
+                <th>姓名</th>
+                <td>秋实</td>
+            </tr>
+            <tr>
+                <th>学号</th>
+                <td>3-26</td>
+            </tr>
+            <tr>
+                <th>目标职业</th>
+                <td>UI/UX 设计师</td>
+            </tr>
+            <tr>
+                <th>专长</th>
+                <td>网页设计、移动应用设计、交互设计</td>
+            </tr>
+            <tr>
+                <th>经验</th>
+                <td>0年</td>
+            </tr>
+            <tr>
+                <th>简介</th>
+                <td>专注于创建美观且用户友好的数字体验</td>
+            </tr>
+            <tr>
+                <th>主页</th>
+                <td><a href='wqs111.github.io' style="color: azure;">wqs111.github.io</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <main>
+
+        <!-- 中间标题文字 -->
+        <div class="hero-text">
+            <h1>Roders Island Engineering</h1>
+            <div id="particle-container" class="partical-container">
+                <!-- <p>个人前端习作</p> -->
+            </div>
+            <p>个人前端习作</p>
+
+
+        </div>
+        <!-- <p>个人前端习作</p> -->
+
+        <div class="bg-img">
+            <img src="Avg_60_i24_5.png" alt="background">
+        </div>
+
+        <div class="search-bar">
+            <input type="text">
+            <button>搜索</button>
+        </div>
+
+        <div class="left-tool-bar">
+            <div class="icon">1</div>
+            <div class="icon">2</div>
+            <div class="icon">3</div>
+            <div class="icon">4</div>
+        </div>
+
+        <div class="learnmore">
+            <button id="about-button">More detail</button>
+        </div>
+    </main>
+
+
+    <script src="logoShow.js"></script>
+    <script>
+
+        // init logo
+        window.onload = () => {
+            new ParticleLogo({
+                containerId: 'particle-container',
+                imageSrc: 'someIcon.png',
+                mouseRadius: 15,
+                pixelStep: 4
+            })
+        }
+
+
+        // 创建自定义鼠标元素
+        const cursor = document.createElement('div');
+        cursor.classList.add('custom-cursor');
+        document.body.appendChild(cursor);
+
+        // 跟踪鼠标移动
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // 为可交互元素添加悬停效果
+        const interactiveElements = document.querySelectorAll('button, .icon');
+
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+            });
+        });
+
+        // 处理窗口调整大小和页面滚动
+        window.addEventListener('resize', () => {
+            const scrollX = window.scrollX;
+            const scrollY = window.scrollY;
+            cursor.style.left = (window.innerWidth / 2 + scrollX) + 'px';
+            cursor.style.top = (window.innerHeight / 2 + scrollY) + 'px';
+        });
+
+        // 获取表格和about按钮元素
+        const profileTable = document.querySelector('.profile-table');
+        const aboutButton = document.getElementById('about-button');
+
+        // 初始状态：表格显示，about按钮正常显示（不隐藏）
+        if (profileTable && aboutButton) {
+            // 点击页面其他位置隐藏表格
+            document.addEventListener('click', (e) => {
+                // 排除表格和about按钮本身
+                if (!profileTable.contains(e.target) && e.target !== aboutButton) {
+                    profileTable.style.display = 'none';
+                }
+            });
+
+            // 点击about按钮显示表格
+            aboutButton.addEventListener('click', () => {
+                profileTable.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+
+</html>
